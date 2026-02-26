@@ -1,0 +1,19 @@
+{
+  
+  "Patient": {
+    "title": "Patient Intake Form",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "submit": "Submit",
+    "submittedMessage": "Form submitted successfully!"
+  },
+  "Staff": {
+    "title": "Staff Dashboard",
+    "waiting": "Waiting for patient input..."
+  },
+  "Common": {
+    "dark": "Dark Mode",
+    "light": "Light Mode"
+  }
+}

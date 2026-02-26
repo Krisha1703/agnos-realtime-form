@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.form-modal, .dashboard {
+  background-color: white;
+}
+
+.dark .form-modal, .dark .dashboard {
+  background-color: #14B8A6;
+}
+
+.form-modal h1, .form-modal p, form label, form .input, .dashboard h1, .dashboard p {
+  color: black;
+}
+
+.dark .form-modal h1, .dark .form-modal p, .dark form label, .dark form .input, .dark .dashboard h1, .dark .dashboard p {
+  color: white;
+}
+
+.info-label {
+  color: black !important;
+}

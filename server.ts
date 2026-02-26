@@ -1,0 +1,45 @@
+import { createServer } from "http"
+import next from "next"
+import { Server } from "socket.io"
+
+const dev = process.env.NODE_ENV !== "production"
+const hostname = "localhost"
+const port = 3000
+
+const app = next({ dev, hostname, port })
+const handle = app.getRequestHandler()
+
+// ✅ store latest patient
+let latestPatient: any = null
+
+app.prepare().then(() => {
+  const httpServer = createServer((req, res) => {
+    handle(req, res)
+  })
+
+  const io = new Server(httpServer, {
+    cors: { origin: "*" }
+  })
+
+  io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id)
+
+    // ✅ when staff connects, send latest immediately
+    if (latestPatient) {
+      socket.emit("staff-update", latestPatient)
+    }
+
+    socket.on("patient-update", (data) => {
+      latestPatient = data
+      io.emit("staff-update", latestPatient) // send to everyone
+    })
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected:", socket.id)
+    })
+  })
+
+  httpServer.listen(port, () => {
+    console.log(`Ready on http://${hostname}:${port}`)
+  })
+})
