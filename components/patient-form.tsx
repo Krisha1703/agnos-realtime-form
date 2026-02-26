@@ -91,7 +91,7 @@ export default function PatientForm() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
-      <div className="w-full max-w-4xl form-modal rounded-2xl shadow-xl p-8 transition-all duration-300">
+      <div className="w-full max-w-5xl form-modal rounded-2xl shadow-xl p-8 transition-all duration-300">
 
         {/* Top Controls */}
         <div className="flex justify-between items-center mb-6">
@@ -139,28 +139,140 @@ export default function PatientForm() {
         </p>
 
         <form
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
           onSubmit={handleSubmit}
         >
-          <InputField label="First Name" name="firstName" value={data.firstName} required onChange={handleChange} error={errors.firstName} />
+          {/* First Name */}
+          <InputField
+            label="First Name"
+            name="firstName"
+            value={data.firstName}
+            required
+            onChange={handleChange}
+            error={errors.firstName}
+          />
 
-          <InputField label="Last Name" name="lastName" value={data.lastName} required onChange={handleChange} error={errors.lastName} />
+          {/* Middle Name (Optional) */}
+          <InputField
+            label="Middle Name"
+            name="middleName"
+            value={data.middleName || ""}
+            onChange={handleChange}
+            error={errors.middleName}
+          />
 
-          <InputField label="Date of Birth" type="date" name="dob" value={data.dob} required onChange={handleChange} error={errors.dob} />
+          {/* Last Name */}
+          <InputField
+            label="Last Name"
+            name="lastName"
+            value={data.lastName}
+            required
+            onChange={handleChange}
+            error={errors.lastName}
+          />
 
-          <SelectField label="Gender" name="gender" value={data.gender} options={["Male", "Female", "Other"]} required onChange={handleChange} error={errors.gender} />
+          {/* Date of Birth */}
+          <InputField
+            label="Date of Birth"
+            type="date"
+            name="dob"
+            value={data.dob}
+            required
+            onChange={handleChange}
+            error={errors.dob}
+          />
 
-          <InputField label="Phone Number" name="phone" value={data.phone} required onChange={handleChange} error={errors.phone} />
+          {/* Gender */}
+          <SelectField
+            label="Gender"
+            name="gender"
+            value={data.gender}
+            options={["Male", "Female", "Other"]}
+            required
+            onChange={handleChange}
+            error={errors.gender}
+          />
 
-          <InputField label="Email Address" name="email" value={data.email} required onChange={handleChange} error={errors.email} />
+          {/* Phone */}
+          <InputField
+            label="Phone Number"
+            name="phone"
+            value={data.phone}
+            required
+            onChange={handleChange}
+            error={errors.phone}
+          />
 
-          <InputField label="Address" name="address" value={data.address} required onChange={handleChange} error={errors.address} className="md:col-span-2" />
+          {/* Email */}
+          <InputField
+            label="Email Address"
+            name="email"
+            value={data.email}
+            required
+            onChange={handleChange}
+            error={errors.email}
+          />
 
-          <InputField label="Preferred Language" name="language" value={data.language} required onChange={handleChange} error={errors.language} />
+          {/* Address (Full Width) */}
+          <InputField
+            label="Address"
+            name="address"
+            value={data.address}
+            required
+            onChange={handleChange}
+            error={errors.address}
+            className="md:col-span-2"
+          />
 
-          <InputField label="Nationality" name="nationality" value={data.nationality} required onChange={handleChange} error={errors.nationality} />
+          {/* Language */}
+          <InputField
+            label="Preferred Language"
+            name="language"
+            value={data.language}
+            required
+            onChange={handleChange}
+            error={errors.language}
+          />
 
-          <div className="md:col-span-2 mt-4">
+          {/* Nationality */}
+          <InputField
+            label="Nationality"
+            name="nationality"
+            value={data.nationality}
+            required
+            onChange={handleChange}
+            error={errors.nationality}
+          />
+
+          {/* Religion (Optional) */}
+          <InputField
+            label="Religion"
+            name="religion"
+            value={data.religion || ""}
+            onChange={handleChange}
+            error={errors.religion}
+          />
+
+          {/* Emergency Contact Name */}
+          <InputField
+            label="Emergency Contact Name"
+            name="emergencyName"
+            value={data.emergencyName || ""}
+            onChange={handleChange}
+            error={errors.emergencyName}
+          />
+
+          {/* Emergency Contact Relation */}
+          <InputField
+            label="Emergency Contact Relation"
+            name="emergencyRelation"
+            value={data.emergencyRelation || ""}
+            onChange={handleChange}
+            error={errors.emergencyRelation}
+          />
+
+          {/* Submit Button */}
+          <div className="md:col-span-1 mt-4">
             <button
               type="submit"
               disabled={loading}

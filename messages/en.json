@@ -1,19 +1,44 @@
 {
-  
+  "Home": {
+    "title": "Agnos Real-Time Patient System",
+    "description": "This system allows patients to fill out their details in real-time while staff members monitor the information instantly.",
+    "patientButton": "Patient Form",
+    "staffButton": "Staff Dashboard"
+  },
+
   "Patient": {
     "title": "Patient Intake Form",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "dob": "Date of Birth",
+    "gender": "Gender",
     "phone": "Phone Number",
+    "email": "Email Address",
+    "nationality": "Nationality",
+    "language": "Preferred Language",
+    "address": "Address",
     "submit": "Submit",
-    "submittedMessage": "Form submitted successfully!"
+    "submittedMessage": "Form submitted successfully!",
+    "active": "Active",
+    "submitted": "Submitted"
   },
+
   "Staff": {
-    "title": "Staff Dashboard",
-    "waiting": "Waiting for patient input..."
+    "title": "Staff Monitoring Dashboard",
+    "subtitle": "Live patient input tracking",
+    "waitingTitle": "Waiting for Patient",
+    "waitingDescription": "Patient information will appear here in real-time.",
+    "currentStatus": "Current Status",
+    "lastUpdated": "Last Updated",
+    "completion": "Form Completion",
+    "submittedAt": "Submitted At",
+    "notSubmitted": "Not submitted"
   },
+
   "Common": {
     "dark": "Dark Mode",
-    "light": "Light Mode"
+    "light": "Light Mode",
+    "english": "English",
+    "thai": "Thai"
   }
 }
