@@ -69,7 +69,7 @@ export default function StaffDashboard() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [locale]);
+  }, []);
 
   if (!patient) {
     return (
