@@ -2,7 +2,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
-import { useSocket } from "@/context/socket-context";
+import { supabase } from "@/lib/supabase"; 
 import { PatientData } from "@/types/patient";
 import { motion } from "framer-motion";
 import { useTranslations, useLocale } from "next-intl";
@@ -14,7 +14,6 @@ import PatientSection from "./patient-section";
 import { calculateCompletion, formatDateTime } from "@/utils/helper-functions";
 
 export default function StaffDashboard() {
-  const { socket } = useSocket();
   const t = useTranslations("Staff");
   const locale = useLocale();
 
@@ -25,21 +24,52 @@ export default function StaffDashboard() {
   const [loadingSummary, setLoadingSummary] = useState(false);
 
   useEffect(() => {
-    if (!socket) return
+    const channel = supabase
+      .channel("patients-channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "patients",
+        },
+        (payload) => {
+          const row = payload.new as any;
+          console.log("Realtime payload:", payload);
 
-    socket.on("staff-update", (data: PatientData) => {
-      setPatient(data);
-      setLastUpdated(formatDateTime(locale));
+          if (!row) return;
 
-      if (data.status === "submitted") {
-        setSubmittedAt(formatDateTime(locale));
-      }
-    })
+          const mappedPatient: PatientData = {
+            firstName: row.first_name,
+            middleName: row.middle_name,
+            lastName: row.last_name,
+            dob: row.dob,
+            gender: row.gender,
+            phone: row.phone,
+            email: row.email,
+            address: row.address,
+            language: row.preferred_language,
+            nationality: row.nationality,
+            religion: row.religion,
+            emergencyName: row.emergency_name,
+            emergencyRelation: row.emergency_relationship,
+            status: row.status,
+          };
+
+          setPatient(mappedPatient);
+          setLastUpdated(formatDateTime(locale));
+
+          if (row.status === "submitted") {
+            setSubmittedAt(formatDateTime(locale));
+          }
+        }
+      )
+      .subscribe();
 
     return () => {
-      socket.off("staff-update");
-    }
-  }, [socket, locale])
+      supabase.removeChannel(channel);
+    };
+  }, [locale]);
 
   if (!patient) {
     return (
@@ -53,29 +83,29 @@ export default function StaffDashboard() {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const completion = calculateCompletion(patient)
+  const completion = calculateCompletion(patient);
 
   const generateSummary = async () => {
-    setLoadingSummary(true)
+    setLoadingSummary(true);
 
     try {
       const res = await fetch("/api/generate-summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patient),
-      })
+      });
 
-      const data = await res.json()
-      setSummary(data.summary || "")
+      const data = await res.json();
+      setSummary(data.summary || "");
     } catch (error) {
-      console.error("Summary error:", error)
+      console.error("Summary error:", error);
     } finally {
-      setLoadingSummary(false)
+      setLoadingSummary(false);
     }
-  }
+  };
 
   return (
     <main className="min-h-screen p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -139,7 +169,7 @@ export default function StaffDashboard() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto text-sm text-gray-700  whitespace-pre-line">
+            <div className="flex-1 overflow-y-auto text-sm text-gray-700 whitespace-pre-line">
               {summary || t("noSummary")}
             </div>
           </div>
@@ -185,5 +215,5 @@ export default function StaffDashboard() {
 
       </div>
     </main>
-  )
+  );
 }

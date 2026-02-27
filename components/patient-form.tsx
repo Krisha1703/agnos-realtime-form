@@ -1,21 +1,25 @@
-"use client"
+/* Patient Form Component */
 
+"use client";
 import { useState, useEffect, ChangeEvent, FormEvent, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useSocket } from "@/context/socket-context";
+import { v4 as uuidv4 } from "uuid";
+
 import { PatientData } from "@/types/patient";
 import { patientSchema } from "@/utils/validation";
+import { supabase } from "@/lib/supabase";
+
 import InputField from "./input-field";
 import SelectField from "./select-field";
-import useInactivity from "@/hooks/use-inactivity";
 import ControlButtons from "./control-buttons";
-import { User, Phone, Shield } from "lucide-react";
 import SectionHeader from "./section-header";
+import useInactivity from "@/hooks/use-inactivity";
+import { User, Shield, Phone } from "lucide-react";
 
 export default function PatientForm() {
   const t = useTranslations("Patient");
-  const { socket } = useSocket();
+  const [patientId] = useState(uuidv4());
 
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,34 +43,52 @@ export default function PatientForm() {
     status: "active"
   }
 
-  const [data, setData] = useState(initialState);
+  const [data, setData] = useState(initialState)
 
   useInactivity(10000, () =>
-    setData((prev) => ({ ...prev, status: "inactive" }))
+    setData(prev => ({ ...prev, status: "inactive" }))
   )
 
   useEffect(() => {
-    if (socket) socket.emit("patient-update", data)
-  }, [data, socket])
+    const save = async () => {
+      await supabase.from("patients").upsert({
+        id: patientId,
+        first_name: data.firstName,
+        middle_name: data.middleName,
+        last_name: data.lastName,
+        dob: data.dob || null,
+        gender: data.gender,
+        phone: data.phone,
+        email: data.email,
+        address: data.address,
+        preferred_language: data.language,
+        nationality: data.nationality,
+        religion: data.religion,
+        emergency_name: data.emergencyName,
+        emergency_relationship: data.emergencyRelation,
+        status: data.status,
+        submitted,
+        updated_at: new Date()
+      })
+    }
 
-  /* ---------------- Field Change ---------------- */
+    save()
+  }, [data, submitted, patientId])
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
-    setData((prev) => ({ ...prev, [name]: value, status: "active" }))
+    setData(prev => ({ ...prev, [name]: value, status: "active" }))
 
     if (errors[name]) {
-      setErrors((prev) => {
-        const updated = { ...prev }
-        delete updated[name]
-        return updated
+      setErrors(prev => {
+        const copy = { ...prev }
+        delete copy[name]
+        return copy
       })
     }
   }
-
-  /* ---------------- Step Validation ---------------- */
 
   const validateStep = () => {
     const stepRequired: Record<number, string[]> = {
@@ -75,41 +97,42 @@ export default function PatientForm() {
       3: ["nationality"]
     }
 
-    const requiredFields = stepRequired[step]
+    const required = stepRequired[step]
     const newErrors: Record<string, string> = {}
 
-    requiredFields.forEach((field) => {
+    required.forEach(field => {
       if (!(data as any)[field]) {
         newErrors[field] = t("validation.required")
       }
     })
 
     setErrors(newErrors)
-
     return Object.keys(newErrors).length === 0
   }
 
-  const nextStep = () => {
-    if (validateStep()) {
-      setStep((prev) => prev + 1)
-    }
-  }
+  const nextStep = () => validateStep() && setStep(prev => prev + 1)
+  const prevStep = () => setStep(prev => prev - 1)
 
-  const prevStep = () => setStep((prev) => prev - 1)
-
-  /* ---------------- Submit ---------------- */
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const result = patientSchema.safeParse(data)
     if (!result.success) return
 
-    setData((prev) => ({ ...prev, status: "submitted" }))
-    setSubmitted(true)
-  }
+    setLoading(true)
 
-  /* ---------------- Progress ---------------- */
+    await supabase
+      .from("patients")
+      .update({
+        submitted: true,
+        status: "submitted",
+        updated_at: new Date()
+      })
+      .eq("id", patientId)
+
+    setSubmitted(true)
+    setLoading(false)
+  }
 
   const requiredFields = [
     "firstName",
@@ -125,33 +148,26 @@ export default function PatientForm() {
 
   const progress = useMemo(() => {
     const filled = requiredFields.filter(
-      (field) => (data as any)[field]
+      field => (data as any)[field]
     ).length
     return Math.round((filled / requiredFields.length) * 100)
   }, [data])
 
-  /* ---------------- UI ---------------- */
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
-      <section className="w-full max-w-5xl bg-white form-modal rounded-2xl shadow-xl p-10">
+      <section className="w-full max-w-5xl form-modal bg-white rounded-2xl shadow-xl p-10">
 
         <ControlButtons />
 
-        {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">
-            {t("formTitle")}
-          </h1>
-          <p className="text-gray-500 mt-2">
-            {t("formDescription")}
-          </p>
+          <h1 className="text-3xl font-bold">{t("formTitle")}</h1>
+          <p className="text-gray-500 mt-2">{t("formDescription")}</p>
 
-          {/* Progress */}
           <div className="mt-6">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded-full">
+            <div className="w-full bg-gray-200 h-3 rounded-full">
               <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-3 rounded-full transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -257,6 +273,7 @@ export default function PatientForm() {
           </div>
 
         </form>
+
       </section>
     </main>
   )

@@ -2,7 +2,6 @@ import { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { ThemeProvider } from 'next-themes'
-import { SocketProvider } from '@/context/socket-context'
 
 const locales = ['en', 'th']
 
@@ -28,9 +27,7 @@ export default async function LocaleLayout({
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <SocketProvider>
           {children}
-        </SocketProvider>
       </NextIntlClientProvider>
     </ThemeProvider>
   )
