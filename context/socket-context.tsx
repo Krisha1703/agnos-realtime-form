@@ -1,7 +1,8 @@
-"use client"
+/* Socket Context for managing WebSocket connections using Socket.IO */
 
-import { createContext, useContext, useEffect, useState } from "react"
-import { io, Socket } from "socket.io-client"
+"use client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 interface SocketContextType {
   socket: Socket | null

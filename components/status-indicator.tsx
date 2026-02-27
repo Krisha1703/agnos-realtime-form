@@ -1,3 +1,5 @@
+/* Status Indicator Component */
+
 interface Props {
   status: "active" | "inactive" | "submitted"
 }

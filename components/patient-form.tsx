@@ -1,25 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSocket } from "@/context/socket-context"
-import { PatientData } from "@/types/patient"
-import { patientSchema } from "@/utils/validation"
-import InputField from "./input-field"
-import SelectField from "./select-field"
-import useInactivity from "@/hooks/use-inactivity"
-
-import { useTheme } from "next-themes"
-import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { useState, useEffect, ChangeEvent, FormEvent, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { useSocket } from "@/context/socket-context";
+import { PatientData } from "@/types/patient";
+import { patientSchema } from "@/utils/validation";
+import InputField from "./input-field";
+import SelectField from "./select-field";
+import useInactivity from "@/hooks/use-inactivity";
+import ControlButtons from "./control-buttons";
+import { User, Phone, Shield } from "lucide-react";
+import SectionHeader from "./section-header";
 
 export default function PatientForm() {
-  const { socket } = useSocket()
-  const { theme, setTheme } = useTheme()
-  const router = useRouter()
-  const locale = useLocale()
+  const t = useTranslations("Patient");
+  const { socket } = useSocket();
 
-  const [data, setData] = useState<PatientData>({
+  const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const initialState: PatientData = {
     firstName: "",
+    middleName: "",
     lastName: "",
     dob: "",
     gender: "",
@@ -28,29 +33,30 @@ export default function PatientForm() {
     address: "",
     language: "",
     nationality: "",
+    religion: "",
+    emergencyName: "",
+    emergencyRelation: "",
     status: "active"
-  })
+  }
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const [data, setData] = useState(initialState);
 
-  // Inactivity → mark inactive
   useInactivity(10000, () =>
     setData((prev) => ({ ...prev, status: "inactive" }))
   )
 
-  // Realtime socket update
   useEffect(() => {
     if (socket) socket.emit("patient-update", data)
   }, [data, socket])
 
-  const handleChange = (e: any) => {
+  /* ---------------- Field Change ---------------- */
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
+    setData((prev) => ({ ...prev, [name]: value, status: "active" }))
 
-    setData({ ...data, [name]: value, status: "active" })
-
-    // 🔥 Clear error in real-time when fixed
     if (errors[name]) {
       setErrors((prev) => {
         const updated = { ...prev }
@@ -60,242 +66,198 @@ export default function PatientForm() {
     }
   }
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault()
-    setLoading(true)
+  /* ---------------- Step Validation ---------------- */
 
-    const result = patientSchema.safeParse(data)
-
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {}
-      result.error.issues.forEach((err) => {
-        if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message
-      })
-      setErrors(fieldErrors)
-      setToast({ message: "Please fix the highlighted fields.", type: "error" })
-      setLoading(false)
-      return
+  const validateStep = () => {
+    const stepRequired: Record<number, string[]> = {
+      1: ["firstName", "lastName", "dob", "gender"],
+      2: ["phone", "email", "address", "language"],
+      3: ["nationality"]
     }
 
-    setErrors({})
-    setData({ ...data, status: "submitted" })
-    setToast({ message: "Form submitted successfully!", type: "success" })
-    setLoading(false)
+    const requiredFields = stepRequired[step]
+    const newErrors: Record<string, string> = {}
 
-    setTimeout(() => setToast(null), 3000)
+    requiredFields.forEach((field) => {
+      if (!(data as any)[field]) {
+        newErrors[field] = t("validation.required")
+      }
+    })
+
+    setErrors(newErrors)
+
+    return Object.keys(newErrors).length === 0
   }
 
-  const switchLanguage = (lang: string) => {
-    router.push(`/${lang}/patient`)
+  const nextStep = () => {
+    if (validateStep()) {
+      setStep((prev) => prev + 1)
+    }
   }
+
+  const prevStep = () => setStep((prev) => prev - 1)
+
+  /* ---------------- Submit ---------------- */
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const result = patientSchema.safeParse(data)
+    if (!result.success) return
+
+    setData((prev) => ({ ...prev, status: "submitted" }))
+    setSubmitted(true)
+  }
+
+  /* ---------------- Progress ---------------- */
+
+  const requiredFields = [
+    "firstName",
+    "lastName",
+    "dob",
+    "gender",
+    "phone",
+    "email",
+    "address",
+    "language",
+    "nationality"
+  ]
+
+  const progress = useMemo(() => {
+    const filled = requiredFields.filter(
+      (field) => (data as any)[field]
+    ).length
+    return Math.round((filled / requiredFields.length) * 100)
+  }, [data])
+
+  /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 transition-colors duration-300">
-      <div className="w-full max-w-5xl form-modal rounded-2xl shadow-xl p-8 transition-all duration-300">
+    <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <section className="w-full max-w-5xl bg-white form-modal rounded-2xl shadow-xl p-10">
 
-        {/* Top Controls */}
-        <div className="flex justify-between items-center mb-6">
-          {/* Theme Toggle */}
-          <button
-            onClick={() =>
-              setTheme(theme === "dark" ? "light" : "dark")
-            }
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm shadow"
-          >
-            {theme === "dark" ? "☀ Light Mode" : "🌙 Dark Mode"}
-          </button>
+        <ControlButtons />
 
-          {/* Language Switch */}
-          <div className="space-x-2">
-            <button
-              onClick={() => switchLanguage("en")}
-              className={`px-3 py-1 rounded text-sm ${
-                locale === "en"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            >
-              EN
-            </button>
+        {/* Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold">
+            {t("formTitle")}
+          </h1>
+          <p className="text-gray-500 mt-2">
+            {t("formDescription")}
+          </p>
 
-            <button
-              onClick={() => switchLanguage("th")}
-              className={`px-3 py-1 rounded text-sm ${
-                locale === "th"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700"
-              }`}
-            >
-              TH
-            </button>
+          {/* Progress */}
+          <div className="mt-6">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 h-3 rounded-full">
+              <div
+                className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
-        </div>
+        </header>
 
-        <h1 className="text-2xl md:text-3xl font-semibold  mb-2">
-          Patient Registration
-        </h1>
-        <p className=" mb-8">
-          Please provide your details below. All required fields must be completed.
-        </p>
+        <form onSubmit={handleSubmit} className="relative overflow-hidden">
 
-        <form
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-          onSubmit={handleSubmit}
-        >
-          {/* First Name */}
-          <InputField
-            label="First Name"
-            name="firstName"
-            value={data.firstName}
-            required
-            onChange={handleChange}
-            error={errors.firstName}
-          />
-
-          {/* Middle Name (Optional) */}
-          <InputField
-            label="Middle Name"
-            name="middleName"
-            value={data.middleName || ""}
-            onChange={handleChange}
-            error={errors.middleName}
-          />
-
-          {/* Last Name */}
-          <InputField
-            label="Last Name"
-            name="lastName"
-            value={data.lastName}
-            required
-            onChange={handleChange}
-            error={errors.lastName}
-          />
-
-          {/* Date of Birth */}
-          <InputField
-            label="Date of Birth"
-            type="date"
-            name="dob"
-            value={data.dob}
-            required
-            onChange={handleChange}
-            error={errors.dob}
-          />
-
-          {/* Gender */}
-          <SelectField
-            label="Gender"
-            name="gender"
-            value={data.gender}
-            options={["Male", "Female", "Other"]}
-            required
-            onChange={handleChange}
-            error={errors.gender}
-          />
-
-          {/* Phone */}
-          <InputField
-            label="Phone Number"
-            name="phone"
-            value={data.phone}
-            required
-            onChange={handleChange}
-            error={errors.phone}
-          />
-
-          {/* Email */}
-          <InputField
-            label="Email Address"
-            name="email"
-            value={data.email}
-            required
-            onChange={handleChange}
-            error={errors.email}
-          />
-
-          {/* Address (Full Width) */}
-          <InputField
-            label="Address"
-            name="address"
-            value={data.address}
-            required
-            onChange={handleChange}
-            error={errors.address}
-            className="md:col-span-2"
-          />
-
-          {/* Language */}
-          <InputField
-            label="Preferred Language"
-            name="language"
-            value={data.language}
-            required
-            onChange={handleChange}
-            error={errors.language}
-          />
-
-          {/* Nationality */}
-          <InputField
-            label="Nationality"
-            name="nationality"
-            value={data.nationality}
-            required
-            onChange={handleChange}
-            error={errors.nationality}
-          />
-
-          {/* Religion (Optional) */}
-          <InputField
-            label="Religion"
-            name="religion"
-            value={data.religion || ""}
-            onChange={handleChange}
-            error={errors.religion}
-          />
-
-          {/* Emergency Contact Name */}
-          <InputField
-            label="Emergency Contact Name"
-            name="emergencyName"
-            value={data.emergencyName || ""}
-            onChange={handleChange}
-            error={errors.emergencyName}
-          />
-
-          {/* Emergency Contact Relation */}
-          <InputField
-            label="Emergency Contact Relation"
-            name="emergencyRelation"
-            value={data.emergencyRelation || ""}
-            onChange={handleChange}
-            error={errors.emergencyRelation}
-          />
-
-          {/* Submit Button */}
-          <div className="md:col-span-1 mt-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-8"
             >
-              {loading ? "Submitting..." : "Submit Form"}
-            </button>
+
+              {/* STEP 1 */}
+              {step === 1 && (
+                <>
+                  <SectionHeader
+                    step={1}
+                    title={t("steps.personal.title")}
+                    description={t("steps.personal.description")}
+                    icon={<User />}
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <InputField label={t("fields.firstName")} name="firstName" required value={data.firstName} onChange={handleChange} error={errors.firstName}/>
+                    <InputField label={t("fields.middleName")} name="middleName" value={data.middleName || ""} onChange={handleChange}/>
+                    <InputField label={t("fields.lastName")} name="lastName" required value={data.lastName} onChange={handleChange} error={errors.lastName}/>
+                    <InputField type="date" label={t("fields.dob")} name="dob" required value={data.dob} onChange={handleChange} error={errors.dob}/>
+                    <SelectField label={t("fields.gender")} name="gender" required value={data.gender} options={[t("gender.male"), t("gender.female"), t("gender.other")]} onChange={handleChange} error={errors.gender}/>
+                  </div>
+                </>
+              )}
+
+              {/* STEP 2 */}
+              {step === 2 && (
+                <>
+                  <SectionHeader
+                    step={2}
+                    title={t("steps.contact.title")}
+                    description={t("steps.contact.description")}
+                    icon={<Phone />}
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <InputField label={t("fields.phone")} name="phone" required value={data.phone} onChange={handleChange} error={errors.phone}/>
+                    <InputField label={t("fields.email")} name="email" required value={data.email} onChange={handleChange} error={errors.email}/>
+                    <InputField label={t("fields.address")} name="address" required value={data.address} onChange={handleChange} error={errors.address}/>
+                    <InputField label={t("fields.language")} name="language" required value={data.language} onChange={handleChange} error={errors.language}/>
+                  </div>
+                </>
+              )}
+
+              {/* STEP 3 */}
+              {step === 3 && (
+                <>
+                  <SectionHeader
+                    step={3}
+                    title={t("steps.background.title")}
+                    description={t("steps.background.description")}
+                    icon={<Shield />}
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <InputField label={t("fields.nationality")} name="nationality" required value={data.nationality} onChange={handleChange} error={errors.nationality}/>
+                    <InputField label={t("fields.religion")} name="religion" value={data.religion || ""} onChange={handleChange}/>
+                    <InputField label={t("fields.emergencyName")} name="emergencyName" value={data.emergencyName || ""} onChange={handleChange}/>
+                    <InputField label={t("fields.emergencyRelation")} name="emergencyRelation" value={data.emergencyRelation || ""} onChange={handleChange}/>
+                  </div>
+                </>
+              )}
+
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div className="flex justify-between mt-10">
+            {step > 1 && (
+              <button type="button" onClick={prevStep} className="px-6 py-2 bg-gray-300 dark:bg-gray-700 rounded-lg">
+                {t("back")}
+              </button>
+            )}
+
+            {step < 3 ? (
+              <button type="button" onClick={nextStep} className="ml-auto px-6 py-2 bg-blue-600 text-white rounded-lg">
+                {t("next")}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={loading || submitted}
+                className={`ml-auto px-6 py-2 text-white rounded-lg transition-all duration-300
+                  ${submitted ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
+                `}
+              >
+                {submitted ? t("submitted") : t("submit")}
+              </button>
+            )}
           </div>
+
         </form>
-
-        {/* Toast */}
-        {toast && (
-          <div
-            className={`fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-lg text-white transition-all duration-300 ${
-              toast.type === "success"
-                ? "bg-green-600"
-                : "bg-red-600"
-            }`}
-          >
-            {toast.message}
-          </div>
-        )}
-      </div>
-    </div>
+      </section>
+    </main>
   )
 }

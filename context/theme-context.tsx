@@ -1,6 +1,7 @@
-"use client"
+/* Theme Context for managing dark and light mode state across the application */
 
-import { createContext, useContext, useState, useEffect } from "react"
+"use client";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const ThemeContext = createContext<any>(null)
 

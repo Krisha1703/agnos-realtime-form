@@ -1,43 +1,107 @@
 {
   "Home": {
     "title": "Agnos Real-Time Patient System",
-    "description": "This system allows patients to fill out their details in real-time while staff members monitor the information instantly.",
+    "description": "A modern healthcare intake platform that allows patients to securely submit their information while staff monitor updates in real time.",
     "patientButton": "Patient Form",
     "staffButton": "Staff Dashboard"
   },
 
   "Patient": {
-    "title": "Patient Intake Form",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "dob": "Date of Birth",
-    "gender": "Gender",
-    "phone": "Phone Number",
-    "email": "Email Address",
-    "nationality": "Nationality",
-    "language": "Preferred Language",
-    "address": "Address",
-    "submit": "Submit",
-    "submittedMessage": "Form submitted successfully!",
-    "active": "Active",
-    "submitted": "Submitted"
+    "formTitle": "Patient Registration Form",
+    "formDescription": "Please complete all required sections below. Your information will be securely transmitted to the medical staff in real time.",
+
+    "steps": {
+      "personal": {
+        "title": "Personal Information",
+        "description": "Provide your basic identity details to help us correctly register your profile."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "Provide your contact details so our staff can reach you when necessary."
+      },
+      "background": {
+        "title": "Background & Emergency Details",
+        "description": "Additional information to support medical assistance and emergency situations."
+      }
+    },
+
+    "fields": {
+      "firstName": "First Name",
+      "middleName": "Middle Name",
+      "lastName": "Last Name",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "address": "Residential Address",
+      "language": "Preferred Language",
+      "nationality": "Nationality",
+      "religion": "Religion",
+      "emergencyName": "Emergency Contact Name",
+      "emergencyRelation": "Emergency Contact Relationship"
+    },
+
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+
+    "validation": {
+      "required": "This field is required."
+    },
+
+    "next": "Next",
+    "back": "Back",
+    "submit": "Submit Registration",
+    "submitted": "Form Submitted"
   },
 
+ 
   "Staff": {
     "title": "Staff Monitoring Dashboard",
-    "subtitle": "Live patient input tracking",
+    "subtitle": "Live patient data tracking",
+
+    "fields": {
+      "firstName": "First Name",
+      "middleName": "Middle Name",
+      "lastName": "Last Name",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "address": "Residential Address",
+      "language": "Preferred Language",
+      "nationality": "Nationality",
+      "religion": "Religion",
+      "emergencyName": "Emergency Contact Name",
+      "emergencyRelation": "Emergency Contact Relationship"
+    },
+
     "waitingTitle": "Waiting for Patient",
     "waitingDescription": "Patient information will appear here in real-time.",
+
     "currentStatus": "Current Status",
     "lastUpdated": "Last Updated",
-    "completion": "Form Completion",
+    "completion": "Completion",
     "submittedAt": "Submitted At",
-    "notSubmitted": "Not submitted"
+    "notSubmitted": "Not submitted",
+
+    "generateSummary": "Generate Summary",
+    "generating": "Generating...",
+    "aiSummary": "AI Medical Summary",
+    "noSummary": "No summary generated yet.",
+
+    "sections": {
+      "personal": "Personal Information",
+      "contact": "Contact Information",
+      "background": "Background & Emergency"
+    }
   },
 
   "Common": {
-    "dark": "Dark Mode",
-    "light": "Light Mode",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
     "english": "English",
     "thai": "Thai"
   }

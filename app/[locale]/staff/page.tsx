@@ -1,4 +1,6 @@
-import StaffDashboard from "@/components/staff-dashboard"
+/* Staff Dashboard Page */
+
+import StaffDashboard from "@/components/staff-dashboard";
 
 export default function StaffPage() {
   return <StaffDashboard />

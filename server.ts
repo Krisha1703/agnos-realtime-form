@@ -1,6 +1,8 @@
-import { createServer } from "http"
-import next from "next"
-import { Server } from "socket.io"
+/* Server Setup with Socket.IO for Real-Time Updates */
+
+import { createServer } from "http";
+import next from "next";
+import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production"
 const hostname = "localhost"
@@ -9,7 +11,6 @@ const port = 3000
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-// ✅ store latest patient
 let latestPatient: any = null
 
 app.prepare().then(() => {
@@ -24,14 +25,13 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     console.log("Client connected:", socket.id)
 
-    // ✅ when staff connects, send latest immediately
     if (latestPatient) {
       socket.emit("staff-update", latestPatient)
     }
 
     socket.on("patient-update", (data) => {
       latestPatient = data
-      io.emit("staff-update", latestPatient) // send to everyone
+      io.emit("staff-update", latestPatient)
     })
 
     socket.on("disconnect", () => {

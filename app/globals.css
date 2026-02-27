@@ -33,14 +33,18 @@ body {
   background-color: #14B8A6;
 }
 
-.form-modal h1, .form-modal p, form label, form .input, .dashboard h1, .dashboard p {
+.form-modal h1, .form-modal h2, .form-modal p, form label, form .input, .dashboard h1, .dashboard p {
   color: black;
 }
 
-.dark .form-modal h1, .dark .form-modal p, .dark form label, .dark form .input, .dark .dashboard h1, .dark .dashboard p {
+.dark .form-modal h1, .dark .form-modal h2, .dark .form-modal p, .dark form label, .dark form .input, .dark .dashboard h1, .dark .dashboard p {
   color: white;
 }
 
 .info-label {
+  color: black !important;
+}
+
+.summary h2 {
   color: black !important;
 }

@@ -1,36 +1,225 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏥 Real-Time Patient Registration & Staff Monitoring System
 
-## Getting Started
+A modern, real-time hospital intake system built with **Next.js**, **Socket.IO**, and **AI-powered summary generation**.
 
-First, run the development server:
+This system allows patients to submit registration details while hospital staff monitor submissions live and generate AI-assisted intake summaries.
+
+---
+
+## 🚀 Overview
+
+This project is a real-time patient intake and staff monitoring dashboard designed for clinical or hospital environments.
+
+It enables:
+
+* Live patient form submission
+* Real-time updates for staff dashboard
+* Required-field based completion tracking
+* AI-generated registration summaries
+* Multi-language support (English / Thai)
+* Clean, scalable architecture
+
+---
+
+## 🧠 Core Features
+
+### 👩‍⚕️ Patient Side
+
+* Multi-step patient registration form
+* Required vs optional field handling
+* Live submission status
+* Real-time socket sync
+
+### 🖥️ Staff Dashboard
+
+* Live patient monitoring
+* Required-field completion tracking (accurate 100% logic)
+* Submission timestamp with full date/time
+* AI-powered intake summary generation
+* Structured personal / contact / background sections
+* Smooth animated progress bar
+
+### 🌍 Internationalization
+
+* Multi-language support using `next-intl`
+* English 🇺🇸
+* Thai 🇹🇭
+* Dynamic re-render on language switch
+
+### 🤖 AI Integration
+
+* Secure API-based AI summary generation
+* Natural paragraph-style hospital intake note
+* Structured, concise, professional output
+
+---
+
+## 🏗️ Tech Stack
+
+| Technology           | Purpose                 |
+| -------------------- | ----------------------- |
+| Next.js (App Router) | Frontend + API routes   |
+| TypeScript           | Type safety             |
+| Socket.IO            | Real-time communication |
+| Framer Motion        | Animations              |
+| Tailwind CSS         | Styling                 |
+| next-intl            | Internationalization    |
+| Groq / LLM API       | AI summary generation   |
+| Lucide Icons         | UI icons                |
+
+---
+
+## 📂 Project Structure
+
+```
+app/
+ ├── [locale]/
+ │    ├── staff/
+ │    ├── patient/
+ │
+ ├── api/
+ │    └── generate-summary/
+ │         └── route.ts
+
+components/
+ ├── control-buttons.tsx
+ ├── info-card.tsx
+ ├── input-field.tsx
+ ├── patient-form.tsx
+ ├── patient-section.tsx
+ ├── section-header.tsx
+ ├── select-field.tsx
+ ├── staff-dashboard.tsx
+ ├── status-indicator.tsx
+
+
+context/
+ └── socket-context.tsx
+ ├── theme-context.tsx
+
+hooks/
+ └── use-inactivity.ts
+
+i18n/
+ └── request.ts
+
+messages/
+ ├── en.json
+ └── th.json
+
+utils/
+ ├── helper-functions.ts
+ └── validation.ts
+
+types/
+ └── patient.ts
+
+server.ts
+
+```
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/Krisha1703/agnos-realtime-form.git
+cd agnos-realtime-form
+```
+
+---
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3️⃣ Create Environment Variables
+
+Create a file:
+
+```
+.env.local
+```
+
+Add:
+
+```
+GROQ_API_KEY=your_api_key_here
+```
+
+Restart dev server after adding env variables.
+
+---
+
+### 4️⃣ Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🔄 Real-Time Architecture
 
-To learn more about Next.js, take a look at the following resources:
+1. Patient fills form
+2. Form emits data via Socket.IO
+3. Staff dashboard listens via `staff-update`
+4. Completion recalculates based only on required fields
+5. Staff can generate AI summary via API route
+6. AI returns structured paragraph summary
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌍 Internationalization
 
-## Deploy on Vercel
+* Uses `next-intl`
+* Locale-aware timestamps
+* Dynamic language switching
+* Field labels translated via JSON key mapping
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Example:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```json
+"fields": {
+  "firstName": "ชื่อ",
+  "dob": "วันเดือนปีเกิด"
+}
+```
+
+---
+
+## 📸 Demo
+
+### 👩‍⚕️ Home Page
+![Home Page](public/screenshots/home-page-en.png)
+
+### 👩‍⚕️ Patient Form
+![Patient Form EN](public/screenshots/patient-page-en.png)
+![Patient Form TH](public/screenshots/patient-page-th.png)
+
+### 🖥️ Staff Dashboard
+![Staff Dashboard 1](public/screenshots/staff-page-1.png)
+![Staff Dashboard 2](public/screenshots/staff-page-2.png)
+
+---
+
+# ⭐ Future Vision
+
+This project can evolve into:
+
+* A full hospital digital intake system
+* AI-assisted triage assistant
+* Cloud-based medical onboarding SaaS
+* Enterprise-grade healthcare workflow platform
+

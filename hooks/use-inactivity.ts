@@ -1,3 +1,5 @@
+/* Custom Hook: useInactivity  - to check if user is active or inactive*/
+
 import { useEffect } from "react"
 
 export default function useInactivity(

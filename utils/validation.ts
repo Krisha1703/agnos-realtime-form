@@ -1,3 +1,5 @@
+/* Validation Schema for Patient Data using Zod */
+
 import { z } from "zod"
 
 export const patientSchema = z.object({

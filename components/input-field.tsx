@@ -1,3 +1,5 @@
+/* Input Field Component */
+
 export default function InputField({
   label,
   name,

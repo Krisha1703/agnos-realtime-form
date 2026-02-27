@@ -1,4 +1,4 @@
-import React from "react"
+/* Select Field Component */
 
 interface Props {
   label: string
