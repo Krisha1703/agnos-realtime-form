@@ -115,15 +115,15 @@ export default function StaffDashboard() {
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-semibold">{t("title")}</h1>
-          <p className="text-gray-500 mt-1">{t("subtitle")}</p>
+          <h1 className="md:text-3xl text-xl font-semibold">{t("title")}</h1>
+          <p className="text-gray-500 mt-1 text-lg">{t("subtitle")}</p>
         </div>
 
         {/* Top Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Info Grid */}
-          <div className="grid grid-cols-2 gap-6 flex-1">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-6 flex-1">
 
             <InfoCard label={t("currentStatus")}>
               <StatusIndicator status={patient.status} />
@@ -154,22 +154,57 @@ export default function StaffDashboard() {
           </div>
 
           {/* AI Summary */}
-          <div className="flex-1 bg-white summary p-8 rounded-2xl shadow-lg flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Sparkles size={18} />
+          <div
+            className="
+              flex-1
+              bg-white
+              p-5 sm:p-8
+              rounded-2xl
+              shadow-lg
+              flex flex-col
+            "
+          >
+            {/* Header */}
+            <div className="
+                flex flex-col sm:flex-row
+                sm:items-center sm:justify-between
+                gap-3
+                mb-4
+              "
+            >
+              <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                <Sparkles className="w-5 h-5 shrink-0" />
                 {t("aiSummary")}
               </h2>
 
               <button
                 onClick={generateSummary}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer text-sm hover:bg-blue-700 transition"
+                className="
+                  w-full sm:w-auto
+                  px-4 py-2
+                  bg-blue-600 text-white
+                  rounded-lg
+                  text-sm
+                  hover:bg-blue-700
+                  transition
+                "
               >
                 {loadingSummary ? t("generating") : t("generateSummary")}
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto text-sm text-gray-700 whitespace-pre-line">
+            {/* Summary Content */}
+            <div
+              className="
+                flex-1
+                overflow-y-auto
+                text-sm
+                text-gray-700
+                whitespace-pre-line
+                leading-relaxed
+                max-h-[300px] sm:max-h-none
+              "
+            >
               {summary || t("noSummary")}
             </div>
           </div>

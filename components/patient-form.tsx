@@ -161,13 +161,13 @@ export default function PatientForm() {
         <ControlButtons />
 
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">{t("formTitle")}</h1>
+          <h1 className="md:text-3xl text-xl font-bold">{t("formTitle")}</h1>
           <p className="text-gray-500 mt-2">{t("formDescription")}</p>
 
           <div className="mt-6">
-            <div className="w-full bg-gray-200 h-3 rounded-full">
+            <div className="w-full bg-gray-200 md:h-3 h-2 rounded-full">
               <div
-                className="bg-blue-600 h-3 rounded-full transition-all"
+                className="bg-blue-600 md:h-3 h-2 rounded-full transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -193,7 +193,7 @@ export default function PatientForm() {
                     step={1}
                     title={t("steps.personal.title")}
                     description={t("steps.personal.description")}
-                    icon={<User />}
+                    icon={<User size={36}/>}
                   />
 
                   <div className="grid md:grid-cols-2 gap-6">

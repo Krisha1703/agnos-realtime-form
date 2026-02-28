@@ -18,7 +18,7 @@ export default function PatientSection({
     <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md">
       <div className="flex items-center gap-3 mb-6">
         <div className="text-blue-600">{icon}</div>
-        <h2 className="text-xl font-semibold info-label">{title}</h2>
+        <h2 className="md:text-xl text-md font-semibold info-label">{title}</h2>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx ts-node server.ts",
+    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production npx ts-node server.ts",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {

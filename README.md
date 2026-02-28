@@ -2,7 +2,7 @@
 
 A modern, responsive hospital intake system built with **Next.js (App Router)**, **Supabase Realtime**, and **AI-powered medical summary generation**.
 
-This project was developed as part of the **Agnos Frontend Developer Candidate Assignment**, requiring a real-time synchronized patient form and staff monitoring dashboard deployed to a cloud platform.
+This project was developed as part of the **Agnos Frontend Developer Candidate Assignment**, requiring a real-time synchronized patient form and staff monitoring dashboard deployed to Vercel.
 
 ---
 
@@ -99,8 +99,6 @@ This system enables:
 * Secure server-side AI summary generation
 * Uses Groq LLM API
 * Produces concise, professional paragraph-style intake notes
-* No hallucinated data — strictly based on provided form fields
-* Handles missing emergency contact gracefully
 
 ---
 
@@ -170,51 +168,49 @@ Realtime is enabled on this table for live subscriptions.
 
 ---
 
-# 📂 Project Structure
-
 ```
-app/
- ├── [locale]/
- │    ├── patient/
- │    ├── staff/
+app/                         # Next.js App Router pages
+ ├── [locale]/               # Internationalized routing (EN / TH)
+ │    ├── patient/           # Patient registration interface
+ │    ├── staff/             # Staff monitoring dashboard
  │
  ├── api/
- │    └── generate-summary/
+ │    └── generate-summary/  # AI summary generation endpoint
  │         └── route.ts
 
-components/
- ├── control-buttons.tsx
- ├── info-card.tsx
- ├── input-field.tsx
- ├── patient-form.tsx
- ├── patient-section.tsx
- ├── section-header.tsx
- ├── select-field.tsx
- ├── staff-dashboard.tsx
- ├── status-indicator.tsx
+components/                  # Reusable UI components
+ ├── control-buttons.tsx     # Language & theme controls
+ ├── info-card.tsx           # Reusable stats display card
+ ├── input-field.tsx         # Standardized text input
+ ├── patient-form.tsx        # Main patient form logic
+ ├── patient-section.tsx     # Staff-side grouped patient display
+ ├── section-header.tsx      # Step-based animated section header
+ ├── select-field.tsx        # Dropdown input component
+ ├── staff-dashboard.tsx     # Real-time monitoring interface
+ ├── status-indicator.tsx    # Status badge component
 
-context/
- └── theme-context.tsx
+context/                     # Global React context providers
+ └── theme-context.tsx       # Light / Dark theme management
 
-hooks/
- └── use-inactivity.ts
+hooks/                       # Custom reusable hooks
+ └── use-inactivity.ts       # Detects inactivity and updates status
 
-lib/
- └── supabase.ts
+lib/                         # External service configuration
+ └── supabase.ts             # Supabase client initialization
 
-i18n/
- └── request.ts
+i18n/                        # Internationalization config
+ └── request.ts              # next-intl request configuration
 
-messages/
+messages/                    # Translation dictionaries
  ├── en.json
  └── th.json
 
-utils/
- ├── helper-functions.ts
- └── validation.ts
+utils/                       # Helper utilities
+ ├── helper-functions.ts     # Completion & date formatting helpers
+ └── validation.ts           # Form validation logic
 
-types/
- └── patient.ts
+types/                       # Shared TypeScript types
+ └── patient.ts              # Patient data interface
 ```
 
 ---
